@@ -69,13 +69,12 @@ function get_fragment () {
 };
 
 function set_fragment (fragment, last) {
-  if (last)
-    last_fragment =	fragment;
   loc.href = loc.href.replace(/#.*$/, '') + '#' + fragment;
+  if (last)
+    last_fragment =	loc.href.replace(/^[^#]*#?/, '');
 };
 
 function load_fragment (fragment) {
-
   fragment = fragment.split('/');
 
   var include = false;
@@ -195,11 +194,11 @@ function get_tweets (path, trustmap_title, _user, context, query, include) {
       var include_query_close = '\');">';
     }
     if (query) {
-      var query_extra = ' / <a href="" onclick="return load_context(\'' + user + '\', \'' + context + '\', \'' + query + include_query_close + query + '</a>';
+      var query_extra = ' / <a href="" onclick="return load_context(\'' + user.replace('\'', '\\\'') + '\', \'' + context.replace('\'', '\\\'') + '\', \'' + query.replace('\'', '\\\'') + include_query_close + query + '</a>';
     } else {
       var query_extra = '';
     }
-    current_trustmap_listing_node.append('<li><a target="_blank" href="http://twitter.com/' + user + '"><img src="' + (profile_images[user] || DEFAULT_IMAGE_URL) + '" width="48px" height="48px" /></a> <a href="" class="link" onclick="return load_user(\'' + user + '\');">@' + user + '</a> / <a href="" onclick="return load_context(\'' + user + '\', \'' + context + include_close + context + '</a>' + query_extra + '<br />' + profile_name + '<hr class="clear" /></li>');
+    current_trustmap_listing_node.append('<li><a target="_blank" href="http://twitter.com/' + user.replace('\'', '\\\'') + '"><img src="' + (profile_images[user] || DEFAULT_IMAGE_URL) + '" width="48px" height="48px" /></a> <a href="" class="link" onclick="return load_user(\'' + user.replace('\'', '\\\'') + '\');">@' + user.replace('\'', '\\\'') + '</a> / <a href="" onclick="return load_context(\'' + user + '\', \'' + context.replace('\'', '\\\'') + include_close + context.replace('\'', '\\\'') + '</a>' + query_extra + '<br />' + profile_name + '<hr class="clear" /></li>');
   }
   current_trustmap_node.show();
   var q = '';
