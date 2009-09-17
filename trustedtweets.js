@@ -40,6 +40,8 @@ var loc = window.location,
     current_context_node = $('#current-context'),
     trustmap_user_node = $('#trustmap-user'),
     infolist_node = $('#infolist'),
+    infolist_container_node = $('#infolist-container'),
+    info_node = $('#info'),
     qform_node = $('#qform'),
     error_messages_node = $('#error-messages'),
     errorlist_node = $('#errorlist'),
@@ -125,6 +127,7 @@ function generate_load_context_onclick_handler (user, context, query) {
 };
 
 var error_stack_count = 0;
+var message_stack_count = 0;
 
 function hide_error_message (msg) {
   msg.remove();
@@ -134,8 +137,10 @@ function hide_error_message (msg) {
 };
 
 function display_message (message) {
+  infolist_container_node.show();
   var msg = $('<li>' + message + '</li>').addClass('loading');
   infolist_node.append(msg);
+  message_stack_count += 1;
   $('.loaded').remove();
   $('.error').remove();
   return msg;
@@ -144,15 +149,23 @@ function display_message (message) {
 function update_message (msg, text, error) {
   if (error === true) {
     var add_class = 'error';
-	var errmsg = $('<div>' + text + '</div>');
+	var errmsg = $('<div class="errmsg">' + text + '</div>');
 	errorlist_node.append(errmsg);
-	error_messages_node.show('slow');
+	error_messages_node.show();
+	errmsg.animate({'backgroundColor': '#ffff9c'}, 500);
     error_stack_count += 1;
-	setTimeout(function () { hide_error_message(errmsg); }, 2000);
+	setTimeout(function () { hide_error_message(errmsg); }, 2100);
   } else {
     var add_class = 'loaded';
   }
-  msg.removeClass('loading').addClass(add_class).text(text);
+  if (DEBUG) {
+    msg.removeClass('loading').addClass(add_class).text(text);
+  } else {
+	msg.remove();
+    message_stack_count -= 1;
+    if (!message_stack_count)
+      infolist_container_node.hide();
+  }
 };
 
 function get_tweets (path, trustmap_title, _user, context, query, include) {
@@ -295,9 +308,9 @@ function render_tweets (user, context, query, tweetdata) {
     return;
   }
   if (query) {
-    listing_node.append('<div class="search-title">Tweets from people @' + user + ' trusts for the context of <em>' + context + '</em> with \'' + query + '\' in them</div>');
+    listing_node.append('<div class="search-title">Tweets mentioning \'' + query + '\' from people @' + user + ' trusts for <em>' + context + '</em></div>');
   } else {
-    listing_node.append('<div class="search-title">Tweets from people @' + user + ' trusts for the context of <em>' + context + '</em></div>');
+    listing_node.append('<div class="search-title">Tweets from people @' + user + ' trusts for <em>' + context + '</em></div>');
   }
   for (var i=0; i < keys.length; i++)
     listing_node.append(tweetdict[keys[i]]);
@@ -811,6 +824,6 @@ function translate_tweets () {
     lang = ref.attr('lang');
     if (lang != AUTOTRANSLATE_LANGUAGE) {
       google.language.translate(elem.innerHTML, "", AUTOTRANSLATE_LANGUAGE, generate_translation_callback(ref, elem.innerHTML, AUTOTRANSLATE_LANGUAGE));
-    };
+    } else { ref.longurlplease(); };
   });
 };
