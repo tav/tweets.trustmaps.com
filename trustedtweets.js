@@ -70,8 +70,16 @@ function get_fragment () {
 
 function set_fragment (fragment, last) {
   loc.href = loc.href.replace(/#.*$/, '') + '#' + fragment;
-  if (last)
-    last_fragment =	loc.href.replace(/^[^#]*#?/, '');
+  if (browser.msie && browser.version < 8) {
+    if ($.isFunction(ie_history))
+      ie_history = ie_history();
+	ie_history['update'](fragment);
+    if (last)
+      last_fragment = ie_history['fragment']();
+  } else {
+    if (last)
+      last_fragment = loc.href.replace(/^[^#]*#?/, '');
+  }
 };
 
 function load_fragment (fragment) {
@@ -643,8 +651,10 @@ $['onfragmentchange'] = function (delay) {
       ie_history[str_fragment](frag, ie_frag);
       last_fragment = frag;
       trigger();
-    } else if ( ie_frag !== last_fragment ) {
-      set_fragment(ie_frag);
+    } else if (ie_frag !== last_fragment) {
+	  if (ie_frag) {
+        set_fragment(ie_frag);
+      }
     }
 
     timeout_id = setTimeout(check_fragment_loop, delay < 0 ? 0 : delay );
@@ -653,18 +663,19 @@ $['onfragmentchange'] = function (delay) {
 
 };
 
+var ie_history_iframe,
+    browser = $.browser;
+
 function ie_history () {
 
-  var iframe,
-      browser = $.browser,
-      that = {};
+  var that = {};
 
   that[str_update] = that[str_fragment] = function (val) { return val; };
 
   if (browser.msie && browser.version < 8) {
 
     that[str_update] = function (frag, ie_frag) {
-      var doc = iframe.document;
+      var doc = ie_history_iframe.document;
       if (frag !== ie_frag) {
         doc.open();
         doc.close();
@@ -673,10 +684,10 @@ function ie_history () {
     };
 
     that[str_fragment] = function () {
-      return iframe.document.location.hash.replace(/^#/, '');
+      return ie_history_iframe.document.location.hash.replace(/^#/, '');
     };
 
-    iframe = $('<iframe/>').hide().appendTo('body').get(0).contentWindow;
+    ie_history_iframe = $('<iframe/>').hide().appendTo('body').get(0).contentWindow;
 
     that[str_update](get_fragment());
 
