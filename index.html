@@ -64,6 +64,21 @@
       padding: 5px;
       margin-left: 10px;
     }
+    #error-messages {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding-top: 16px;
+      background-color: #fff;
+      width: 100%;
+      border-bottom: 1px solid #999;
+      text-align: center;
+      display: none;
+      font-size: 1.6em;
+    }
+    #error-messages div {
+      margin-bottom: 16px;
+    }
     #info {
       float: right;
       border: 1px solid #ccc;
@@ -75,12 +90,12 @@
       width: 225px;
       max-width: 225px;
     }
-    ul#infolist {
+    ul#infolist, ul#errorlist {
       list-style-type: none;
       margin: 0;
       padding: 0;
     }
-    ul#infolist li {
+    ul#infolist li, ul#errorlist li {
       margin: 5px;
       padding-left: 24px;
     }
@@ -172,15 +187,6 @@
       margin-bottom: 5px;
     }
 
-    ul#infolist {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-    }
-    ul#infolist li {
-      margin: 5px;
-      padding-left: 24px;
-    }
 
     #refresh {
       float: left;
@@ -297,9 +303,12 @@
   <script type="text/javascript" src="http://swfobject.googlecode.com/svn/trunk/swfobject/swfobject.js"></script>
   <script type="text/javascript" src="longurlplease.js?v=6"></script>
   <script type="text/javascript" src="plugins.js?v=6"></script>
-  <script type="text/javascript" src="trustedtweets.js?v=6"></script>
+  <script type="text/javascript" src="trustedtweets.js?v=7"></script>
 </head>
 <body>
+<div id="error-messages">
+  <ul id="errorlist"></ul>
+</div>
 <div id="body">
 
 <div id="main">

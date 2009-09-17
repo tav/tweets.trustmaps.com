@@ -41,6 +41,8 @@ var loc = window.location,
     trustmap_user_node = $('#trustmap-user'),
     infolist_node = $('#infolist'),
     qform_node = $('#qform'),
+    error_messages_node = $('#error-messages'),
+    errorlist_node = $('#errorlist'),
     view_user_node = $('#view-user');
 
 var trustmaps = {},
@@ -122,6 +124,15 @@ function generate_load_context_onclick_handler (user, context, query) {
   };
 };
 
+var error_stack_count = 0;
+
+function hide_error_message (msg) {
+  msg.remove();
+  error_stack_count -= 1;
+  if (!error_stack_count)
+	error_messages_node.hide();
+};
+
 function display_message (message) {
   var msg = $('<li>' + message + '</li>').addClass('loading');
   infolist_node.append(msg);
@@ -133,6 +144,11 @@ function display_message (message) {
 function update_message (msg, text, error) {
   if (error === true) {
     var add_class = 'error';
+	var errmsg = $('<div>' + text + '</div>');
+	errorlist_node.append(errmsg);
+	error_messages_node.show('slow');
+    error_stack_count += 1;
+	setTimeout(function () { hide_error_message(errmsg); }, 2000);
   } else {
     var add_class = 'loaded';
   }
