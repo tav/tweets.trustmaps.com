@@ -1,0 +1,462 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- Placed into the public domain by tav@espians.com -->
+<head>
+  <title>Espra Trustmap Powered Twitter Stream</title>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+  <style type="text/css">
+    body {
+      background-color: #fff;
+      font: 13px/19px Arial, Verdana, sans-serif;
+    }
+    a, a:visited, a:hover, a:active {
+      color: #a21017;
+    }
+    a:hover {
+      text-decoration: none;
+    }
+    img {
+      border: 0;
+    }
+    hr.clear {
+      clear: both;
+      height: 0;
+      width: 0;
+      margin: 0;
+      padding: 0;
+      background-color: transparent;
+      border: 0;
+      noshade: noshade;
+    }
+    input {
+      max-width: 200px;
+    }
+
+    #body {
+      margin-left: auto;
+      margin-right: auto;
+      width: 850px;
+    }
+    #logo {
+      margin-bottom: 20px;
+    }
+    #settings {
+      float: right;
+      padding: 7px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+      text-align: right;
+    }
+    #view-user {
+      margin-left: 5px;
+    }
+    #translation {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
+      text-align: center;
+    }
+    .autotranslate-note {
+      display: inline;
+      background-color: #e9e9e9;
+      font-size: 0.6em;
+      padding: 5px;
+      margin-left: 10px;
+    }
+    #info {
+      float: right;
+      border: 1px solid #ccc;
+      margin-left: 10px;
+      padding: 5px;
+      border-radius: 5px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      width: 225px;
+      max-width: 225px;
+    }
+    ul#infolist {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    ul#infolist li {
+      margin: 5px;
+      padding-left: 24px;
+    }
+    li.loading {
+      background-image: url('spinner.gif');
+      background-repeat: no-repeat;
+    }
+    li.loaded {
+      background-image: url('http://cloud.github.com/downloads/tav/plexnet/gfx.tickbox.checked.gif');
+      background-repeat: no-repeat;
+      background-position: 3px 3px;
+      padding-left: 27px;
+    }
+    li.error {
+      background-image: url('error.gif');
+      background-repeat: no-repeat;
+    }
+
+    #recent, #current-trustmap, #goto {
+      border-top: 1px solid #ccc;
+      margin-top: 10px;
+      padding-top: 10px;
+      display: block;
+    }
+
+    ul#current-trustmap-listing {
+      list-style-type: none;
+      margin-left: 12px;
+      padding: 0;
+    }
+
+    ul#current-trustmap-listing img {
+      padding-right: 5px;
+      margin-bottom: 15px;
+      float: left;
+    }
+
+    #goto {
+      padding: 7px;
+      padding-bottom: 0px;
+      display: block;
+    }
+
+    #goto img {
+      vertical-align: middle;
+    }
+
+    #recent strong, #current-trustmap strong {
+      font-size: 1.1em;
+    }
+
+    #current-trustmap {
+      display: none;
+    }
+
+    #current-trustmap strong {
+      display: block;
+    }
+
+    .absmiddle {
+      vertical-align: middle;
+      padding-bottom: 4px;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .search-title {
+      margin-top: 0.5em;
+      margin-bottom: 1.5em;
+      text-align: left;
+      font-size: 0.9em;
+      color: #999;
+    }
+
+    #default-context-option-container {
+      padding: 2em 0.5em 1em 20px;
+    }
+
+    #default-user-option-container {
+      padding: 0em 0.5em 1.5em 20px;
+    }
+
+    span.clear {
+      font-size: 0.7em;
+    }
+    ul#recentlist li {
+      margin-bottom: 5px;
+    }
+
+    ul#infolist {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    ul#infolist li {
+      margin: 5px;
+      padding-left: 24px;
+    }
+
+    #refresh {
+      float: left;
+      font-size: 1em;
+      text-decoration: none;
+    }
+
+    .actionbar {
+      background-color: #f9f9f9;
+      padding: 8px;
+      padding-bottom: 10px;
+      padding-top: 14px;
+      text-align: right;
+      border-bottom: 1px solid #999;
+      min-width: 400px;
+    }
+
+    .contentarea {
+      width: 600px;
+      border: 1px solid #999;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      -webkit-border-bottom-left-radius: 8px;
+      -webkit-border-bottom-right-radius: 8px;
+      -moz-border-radius-bottomleft: 8px;
+      -moz-border-radius-bottomright: 8px;
+      margin-top: 10px;
+      margin-right: 10px;
+    }
+    .content {
+      padding: 10px;
+    }
+
+    a#current-user, a#current-user:hover, a#current-user:visited, a#current-user:active {
+      border-bottom: 0px solid #666;
+      padding-bottom: 5px;
+      color: #000;
+      text-decoration: none;
+      font-size: 1.2em;
+    }
+
+    #results {
+      display: none;
+    }
+
+    #footer {
+      margin-top: 30px;
+      padding: 10px;
+      border: 1px dashed #ccc;
+      background-color: #f9f9f9;
+      font-size: 1em;
+      line-height: 1.6em;
+    }
+
+    #home {
+      display: none;
+    }
+
+    #tagcloud {
+      margin: 20px;
+      margin-bottom: 0em;
+      line-height: 2em;
+    }
+    .tagcloudlink {
+      font-size: 1.5em !important;
+      padding: 5px;
+      line-height: 2em;
+    }
+
+    .tweet {
+      border-bottom: 1px dashed #ccc;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      font-size: 1.1em;
+    }
+
+    .tweet-author, .tweet-message {
+      display: inline;
+      line-height: 1.4em;
+    }
+
+    .tweet-extra {
+      font-size: 0.9em;
+      color: #999;
+      margin-top: 8px;
+    }
+
+    .tweet-extra a, .tweet-extra a:visited, .tweet-extra a:hover, .tweet-extra a:active {
+      color: #999;
+    }
+
+    .profile-image {
+      float: left;
+    }
+
+    .tweet-content {
+      margin-left: 60px;
+    }
+
+  </style>
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+  /* <![CDATA[ */
+
+  google.load("language", "1");
+
+  function initialize() {};
+
+  google.setOnLoadCallback(initialize);
+
+  /* ]]> */
+  </script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+  <script type="text/javascript" src="http://swfobject.googlecode.com/svn/trunk/swfobject/swfobject.js"></script>
+  <script type="text/javascript" src="longurlplease.js?v=6"></script>
+  <script type="text/javascript" src="plugins.js?v=6"></script>
+  <script type="text/javascript" src="trustedtweets.js?v=6"></script>
+</head>
+<body>
+<div id="body">
+
+<div id="main">
+  <form action="" method="post" onsubmit="return change_view_user();">
+  <div id="settings">
+
+    Viewing those trusted by @<input type="text" name="view-user" id="view-user" value="" size="14" />
+    <input type="submit" name="submit" value=" Change User " />
+
+    <!--
+
+    Your <a href="http://www.trustmap.org/settings/remote_key/" target="_blank">Trustmap Remote Key</a>:
+	<input type="text" name="remote_key" id="remote_key" value="" size="32" />
+	<input type="submit" name="submit" value=" Login! " />
+
+    -->
+
+  </div>
+  </form>
+  <div id="logo">
+	<a href="/"><img src="http://static2.trustmap.org/static/img/trustmap_logo.png" alt="Espra Trustmap" /></a>
+  </div>
+  <hr class="clear" />
+
+  <div id="info">
+	<ul id="infolist"></ul>
+    <div id="goto">
+      <!--
+      <a href="http://www.trustmap.org"><img src="http://cloud.github.com/downloads/tav/plexnet/gfx.espra.doc.icon.png" width="16px" height="16px" alt="Espra" /></a>
+      -->
+	  Visit <a href="http://www.trustmap.org">Espra Trustmap</a> to manage your trustmaps!
+    </div>
+	<div id="translation">
+
+	<select id="lang-select" onchange="set_language(this);">
+		<option value="" id="select-language" selected="selected">Autotranslation Off</option>
+		<option value="af" id="openaf">Afrikaans</option><option
+		value="sq" id="opensq">Albanian</option><option
+		value="ar" id="openar">Arabic (العربية)</option><option
+		value="be" id="openbe">Belarusian</option><option
+		value="bg" id="openbg">Bulgarian (български)</option><option
+		value="ca" id="openca">Catalan (català)</option><option
+		value="zh-CN" id="openzh-CN">Chinese (中文 [简体])</option><option
+		value="zh-TW" id="openzh-TW">Chinese (中文 [繁體])</option><option
+		value="hr" id="openhr">Croatian (hrvatski)</option><option
+		value="cs" id="opencs">Czech (česky)</option><option
+		value="da" id="openda">Danish (Dansk)</option><option
+		value="nl" id="opennl">Dutch (Nederlands)</option><option
+		value="en" id="openen">English</option><option
+		value="et" id="openet">Estonian</option><option
+		value="fa" id="openfa">Farsi/Persian</option><option
+		value="tl" id="opentl">Filipino</option><option
+		value="fi" id="openfi">Finnish (suomi)</option><option
+		value="fr" id="openfr">French (Français)</option><option
+		value="gl" id="opengl">Galician</option><option
+		value="de" id="opende">German (Deutsch)</option><option
+		value="el" id="openel">Greek (Ελληνικά)</option><option
+		value="iw" id="openiw">Hebrew (עברית)</option><option
+		value="hi" id="openhi">Hindi (हिन्दी)</option><option
+		value="hu" id="openhu">Hungarian</option><option
+		value="is" id="openis">Icelandic</option><option
+		value="id" id="openid">Indonesian</option><option
+		value="ga" id="openga">Irish</option><option
+		value="it" id="openit">Italian (Italiano)</option><option
+		value="ja" id="openja">Japanese (日本語)</option><option
+		value="ko" id="openko">Korean (한국어)</option><option
+		value="lv" id="openlv">Latvian (latviešu)</option><option
+		value="lt" id="openlt">Lithuanian (Lietuvių)</option><option
+		value="mk" id="openmk">Macedonian</option><option
+		value="ms" id="openms">Malay</option><option
+		value="mt" id="openmt">Maltese</option><option
+		value="no" id="openno">Norwegian (norsk)</option><option
+		value="pl" id="openpl">Polish (Polski)</option><option
+		value="pt" id="openpt">Portuguese (Português)</option><option
+		value="ro" id="openro">Romanian (Română)</option><option
+		value="ru" id="openru">Russian (Русский)</option><option
+		value="sr" id="opensr">Serbian (српски)</option><option
+		value="sk" id="opensk">Slovak (slovenčina)</option><option
+		value="sl" id="opensl">Slovenian (slovenščina)</option><option
+		value="es" id="openes">Spanish (Español)</option><option
+		value="sw" id="opensw">Swahili</option><option
+		value="sv" id="opensv">Swedish (Svenska)</option><option
+		value="th" id="openth">Thai</option><option
+		value="tr" id="opentr">Turkish</option><option
+		value="uk" id="openuk">Ukrainian (українська)</option><option
+		value="vi" id="openvi">Vietnamese (Tiếng Việt)</option><option
+		value="cy" id="opency">Welsh</option><option
+		value="yi" id="openyi">Yiddish</option>
+		</select>
+
+	</div>
+    <div id="recent">
+      <strong>Recent Searches</strong> <span class="clear">[ <a href="" onclick="return clear_recents()">CLEAR</a> ]</span>
+	  <ul id="recent-list"></ul>
+    </div>
+    <div id="current-trustmap">
+      <strong><a href="" id="current-trustmap-user"></a> trusts for '<span id="current-trustmap-context"></span>' &rarr;</strong>
+      <ul id="current-trustmap-listing"></ul>
+    </div>
+
+  </div>
+
+  <div class="contentarea" id="home">
+    <div class="content">
+    <a href="" id="current-user">@tav</a>
+    <div id="tagcloud">
+    </div>
+    <div id="default-context-option-container"><input type="checkbox" name="default-context-option" id="default-context-option" onchange="return toggle_default_context_option();" /> <label for="default-context-option">Automatically filter for tweets which <em>also</em> contain the 'context'</label></div>
+    <div id="default-user-option-container"><input type="checkbox" name="default-user-option" id="default-user-option" onchange="return toggle_default_user_option();" /> <label for="default-user-option">Also include tweets from the trustmap user in the results</label></div>
+    </div>
+  </div>
+
+  <div class="contentarea" id="results">
+  <div class="actionbar">
+  <div id="refresh">
+  <a href="" id="current-user-refresh"></a> &nbsp;/&nbsp;
+  <a href="" id="current-context"></a>
+  <a href="" id="current-context-refresh"><img src="refresh.png" alt="refresh" class="absmiddle" /></a>
+  </div>
+  <form action="" id="qform" method="post">
+  <div>
+  <input type="search" autosave="org.trustmap.tweets.q" name="q" id="q" placeholder="Enter search terms" results="10" />
+  <input type="submit" name="submit" value=" Search! " />
+  </div>
+  </form>
+  </div>
+  <div class="content" id="listing">
+  </div>
+  </div>
+
+  <hr class="clear" />
+
+</div>
+
+
+<div id="footer">
+  This is a demo <a href="http://www.trustmap.org">Espra Trustmap</a>
+
+  application by <a href="http://twitter.com">@tav</a> and
+  <a href="http://twitter.com/thruflo">@thruflo</a> using
+  <a href="http://apiwiki.twitter.com/">Twitter Search</a>. Use the
+  <a href="http://www.trustmap.org/api/docs/">Trustmap API</a> to
+  build your own applications!
+</div>
+
+</div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-90176-15");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>
+
