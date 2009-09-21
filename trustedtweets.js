@@ -292,7 +292,8 @@ function do_twitter_search (i, qstring, path, trustmap_title, user, context, que
       if (tweet_id > since_id)
         since_id = tweet_id;
       var tweeter = result.from_user;
-      tweetdict[tweet_id] = $('<div class="tweet" id="tweet-' + tweet_id + '"><a class="profile-image" href="http://twitter.com/' + tweeter + '" target="_blank"><img width="48px" height="48px" src="' + result.profile_image_url + '" alt="' + tweeter + '\'s profile image" /></a><div class="tweet-content"><div class="tweet-author"><a href="http://twitter.com/' + tweeter + '" target="_blank">' + tweeter + '</a>: </div><div class="tweet-message untranslated" lang="' + (result.iso_language_code || '') + '">' + link_tweet(result.text) + '</div><div class="tweet-extra"><span timestamp="' + result.created_at + '">' + get_relative_datetime(result.created_at, now) + '</span> via ' + unescape_xml(result.source) + ' &middot; <a target="_blank" href="http://twitter.com/?status=' + encodeURIComponent('@' + tweeter + ' ') + '&in_reply_to_status=' + tweet_id + '&in_reply_to=' + tweeter + '">Reply</a> &middot; <a target="_blank" href="http://twitter.com/' + tweeter + '/statuses/' + tweet_id + '">View Tweet</a></div></div></div>');
+      var tweet_lang = (result.to_user && (result.to_user.toLowerCase() == 'trustmap')) ? 'en' : (result.iso_language_code || '');
+      tweetdict[tweet_id] = $('<div class="tweet" id="tweet-' + tweet_id + '"><a class="profile-image" href="http://twitter.com/' + tweeter + '" target="_blank"><img width="48px" height="48px" src="' + result.profile_image_url + '" alt="' + tweeter + '\'s profile image" /></a><div class="tweet-content"><div class="tweet-author"><a href="http://twitter.com/' + tweeter + '" target="_blank">' + tweeter + '</a>: </div><div class="tweet-message untranslated" lang="' + tweet_lang + '">' + link_tweet(result.text) + '</div><div class="tweet-extra"><span timestamp="' + result.created_at + '">' + get_relative_datetime(result.created_at, now) + '</span> via ' + unescape_xml(result.source) + ' &middot; <a target="_blank" href="http://twitter.com/?status=' + encodeURIComponent('@' + tweeter + ' ') + '&in_reply_to_status=' + tweet_id + '&in_reply_to=' + tweeter + '">Reply</a> &middot; <a target="_blank" href="http://twitter.com/' + tweeter + '/statuses/' + tweet_id + '">View Tweet</a></div></div></div>');
     }
     render_tweets(user, context, query, tweetdata);
     update_message(msg, "Updated tweets for " + trustmap_title + ((i == 0) ? "" : " [" + (i + 1) + "]"));
@@ -412,7 +413,7 @@ function load_context (user, context, query, include, homeclick) {
 
   var msg = display_message("Getting the Trustmap for " + trustmap_title);
 
-  $.getJSON(API_BASE_URL + "get_trusted_users?format=json&callback=?&user=" + encodeURIComponent('@' + user) + '&context=' + encodeURIComponent(context), function (data) {
+  $.getJSON(API_BASE_URL + "get_trusted_users?limit=99&format=json&callback=?&user=" + encodeURIComponent('@' + user) + '&context=' + encodeURIComponent(context), function (data) {
 
     if ((data.status) && (data.status != 200)) {
       if (data.message)
@@ -469,7 +470,7 @@ function load_user (user) {
 
   view_user_node.focus();
 
-  $.getJSON(API_BASE_URL + "get_contexts_for_user?format=json&callback=?&user=" + encodeURIComponent('@' + user), function (data) {
+  $.getJSON(API_BASE_URL + "get_contexts_for_user?limit=99&format=json&callback=?&user=" + encodeURIComponent('@' + user), function (data) {
 
     if ((data.status) && (data.status != 200)) {
       if (data.message) {
@@ -523,7 +524,7 @@ function render_recents (recent_list) {
       user,
       context,
       query,
-      max = Math.min(11, recent_list.length);
+      max = Math.min(5, recent_list.length);
 
   recent_list_node.empty();
   recent_list.sort().reverse();
